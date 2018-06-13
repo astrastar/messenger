@@ -16,21 +16,27 @@ class JIMMessage:
         return b_msg
 
     def presence(self, acc_name, status):
-        self.msg['action'] = 'presence'
-        self.msg.update({'user': {
+        pres_msg = self.msg
+        pres_msg['action'] = 'presence'
+        pres_msg.update({'user': {
             'account_name': acc_name,
             'status': status
         }})
+        return self.encode(pres_msg)
 
     def probe(self):
-        self.msg['action'] = 'probe'
+        probe_msg = self.msg
+        probe_msg['action'] = 'probe'
+        return self.encode(probe_msg)
 
     def auth(self, acc_name, pswrd):
-        self.msg['action'] = 'authenticate'
-        self.msg.update({'user': {
+        auth_msg = self.msg
+        auth_msg['action'] = 'authenticate'
+        auth_msg.update({'user': {
             'account_name': acc_name,
             'password': pswrd
         }})
+        return self.encode(auth_msg)
 
     def clear(self):
         self.msg = {
@@ -39,11 +45,13 @@ class JIMMessage:
         }
 
     def txt_msg(self, acc_name, text):
-        self.msg['action'] = 'text'
-        self.msg.update({
+        txt_msg = self.msg
+        txt_msg['action'] = 'text'
+        txt_msg.update({
             'user': acc_name,
             'text:': text
         })
+        return self.encode(txt_msg)
 
     def decode(self, inbox_msg):
         b_msg = inbox_msg.decode('ascii')
@@ -75,9 +83,17 @@ class Client:
         return response
 
 
-c = Client('localhost', 8885, 'dd', '324')
-msg = JIMMessage()
-pres = msg.presence('max', 'online')
 
-c.send_pres_msg(msg.presence('max', 'online').encode())
-print(msg.decode(c.read_resp()))
+
+if __name__ == '__main__':
+
+    c = Client('localhost', 8886, 'dd', '324')
+    msg = JIMMessage()
+    # pres = msg.presence('max', 'online')
+    # c.send_pres_msg(pres)
+    # print(msg.decode(c.read_resp()))
+    # msg.clear()
+    # c.send_pres_msg(msg.txt_msg('max', 'hello!'))
+    print(msg.decode(c.read_resp()))
+    b = Client('localhost', 8886, 'dd', '324')
+    print(msg.decode(b.read_resp()))
